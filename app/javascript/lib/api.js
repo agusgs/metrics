@@ -36,12 +36,7 @@ function get(path) {
 }
 
 export function getMetrics() {
-    return Promise.resolve( [
-        { id: 1, name: "metric 1", lastUpdate: '2021-06-27T00:00:01' },
-        { id: 2, name: "metric 2", lastUpdate: null },
-        { id: 3, name: "metric 3", lastUpdate: '2021-06-25T12:11:01' },
-        { id: 4, name: "metric 4", lastUpdate: '2020-06-25T17:11:01' },
-    ])
+    return get("api/metrics")
 }
 
 export function getMetric() {
