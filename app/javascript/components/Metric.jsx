@@ -1,6 +1,6 @@
 import {Link, useParams} from "react-router-dom";
 import React, {useEffect, useState} from "react";
-import {getMetric} from "../lib/api";
+import {getMeasures} from "../lib/api";
 import TimeSeriesChart from "./TimeSeriesChart";
 
 export function Metric() {
@@ -12,7 +12,7 @@ export function Metric() {
     const [asyncState, setAsyncState] = useState({status: loading})
 
     useEffect(() => {
-        getMetric(id).then((metric) => {
+        getMeasures(id).then((metric) => {
             setAsyncState({status: success, metric: metric})
         }).catch((_e) => {
             setAsyncState({status: error})
@@ -25,13 +25,14 @@ export function Metric() {
         case error:
             return <p>Error</p>
         case success:
+            const { metric, avgDay, avgHour, avgMin, measures } = asyncState.metric
             return (
                 <>
-                    <p>{asyncState.id} {asyncState.metric.name}</p>
-                    <p> Average per day = {asyncState.metric.avgDay}</p>
-                    <p> Average per hour = {asyncState.metric.avgHour}</p>
-                    <p> Average per minute = {asyncState.metric.avgMin}</p>
-                    <TimeSeriesChart chartName={asyncState.metric.name} chartData={asyncState.metric.measures} />
+                    <p>{metric.id} {metric.name}</p>
+                    <p> Average per day = {avgDay}</p>
+                    <p> Average per hour = {avgHour}</p>
+                    <p> Average per minute = {avgMin}</p>
+                    <TimeSeriesChart chartName={metric.name} chartData={measures} />
                 </>
             )
         default:
