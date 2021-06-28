@@ -25,14 +25,11 @@ export function Metric() {
         case error:
             return <p>Error</p>
         case success:
-            const { metric, avgDay, avgHour, avgMin, measures } = asyncState.metric
+            const { metric, measures } = asyncState.metric
             return (
                 <>
                     <p>{metric.id} {metric.name}</p>
-                    <p> Average per day = {avgDay}</p>
-                    <p> Average per hour = {avgHour}</p>
-                    <p> Average per minute = {avgMin}</p>
-                    <TimeSeriesChart chartName={metric.name} chartData={measures} />
+                    <TimeSeriesChart chartData={measures} />
                 </>
             )
         default:

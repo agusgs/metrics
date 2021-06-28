@@ -5,24 +5,15 @@ module Api
   # existent metric
   class MeasuresController < ApplicationController
     def index
-      measures = [
-        { measure: 9.9, timestamp: DateTime.now.to_i },
-        { measure: 9.2, timestamp: DateTime.now.to_i },
-        { measure: 6.1, timestamp: DateTime.now.to_i },
-        { measure: 5.4, timestamp: DateTime.now.to_i },
-        { measure: 12.7, timestamp: DateTime.now.to_i }
-      ]
+      metric = Metric.find(params.require(:metric_id))
+      measures = Measures.for_metric(metric)
 
       response = {
-        id: 1,
-        avgDay: 10.5,
-        avgHour: 9.5,
-        avgMin: 9.2,
         metric: {
-          id: 1,
-          name: 'metric name'
+          id: metric.id,
+          name: metric.name
         },
-        measures: measures
+        measures: measures.serialize
       }
 
       render json: response
