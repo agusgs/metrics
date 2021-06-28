@@ -1,0 +1,7 @@
+metrics-db:
+  image: postgres:12
+  ports:
+    - "5432:5432"
+  environment:
+    POSTGRESQL_USER: postgres
+    POSTGRES_PASSWORD: postgres
