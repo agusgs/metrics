@@ -5,7 +5,7 @@ module Api
   class MetricsController < ApplicationController
     def index
       metrics = ::Metric.all.map do |metric|
-        { id: metric.id, name: metric.name, lastUpdate: metric.last_measure_at.to_i }
+        { id: metric.id, name: metric.name, lastUpdate: metric.last_measure_at&.iso8601 }
       end
       render json: metrics
     end

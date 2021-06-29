@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-# This class represents the group of measures that exists for a given metric
-class Measures
+# This class represents the group of measures that exists for a given metric and will be sent through the api
+class MeasuresPresenter
   def self.for_metric(metric, from_filter)
     new(metric, from_filter)
   end
@@ -29,7 +29,7 @@ class Measures
   def serialize
     @all.map do |measure|
       {
-        timestamp: measure.created_at.to_i,
+        timestamp: measure.created_at.iso8601,
         measure: measure.value.to_f,
         avgMinute: get_average_minute(measure).to_f,
         avgHour: get_average_hour(measure).to_f,

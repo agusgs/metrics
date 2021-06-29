@@ -48,7 +48,7 @@ module Api
 
           @measures.map do |measure|
             {
-              'timestamp' => measure.created_at.utc.to_i,
+              'timestamp' => measure.created_at.iso8601,
               'measure' => measure.value.to_f,
               'avgMinute' => average,
               'avgHour' => average,
@@ -80,7 +80,7 @@ module Api
         def expected_measures
           [
             {
-              'timestamp' => @today_measure.created_at.utc.to_i,
+              'timestamp' => @today_measure.created_at.iso8601,
               'measure' => @today_measure.value.to_f,
               'avgMinute' => @today_measure.value.to_f,
               'avgHour' => @today_measure.value.to_f,
@@ -90,7 +90,36 @@ module Api
         end
 
         test 'returns success response' do
-          get "/api/measures?metric_id=#{@metric.id}&from=#{10.minutes.ago.to_i}"
+          get "/api/measures?metric_id=#{@metric.id}&from=#{10.minutes.ago}"
+
+          assert_response :success
+          assert_equal expected_measures, response.parsed_body['measures']
+        end
+      end
+
+      class SuccessWithTimezoneResponse < IndexTest
+        setup do
+          @time_zone = 'CET'
+          @metric = Metric.create!(name: 'the name')
+          Timecop.freeze(DateTime.now) do
+            @measure = Measure.create!(metric: @metric, value: rand(0.0...999.99999))
+          end
+        end
+
+        def expected_measures
+          [
+            {
+              'timestamp' => @measure.created_at.iso8601,
+              'measure' => @measure.value.to_f,
+              'avgMinute' => @measure.value.to_f,
+              'avgHour' => @measure.value.to_f,
+              'avgDay' => @measure.value.to_f
+            }
+          ]
+        end
+
+        test 'returns success response' do
+          get "/api/measures?metric_id=#{@metric.id}", headers: { 'X-TimeZone' => @time_zone }
 
           assert_response :success
           assert_equal expected_measures, response.parsed_body['measures']

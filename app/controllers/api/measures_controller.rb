@@ -7,8 +7,8 @@ module Api
     def index
       metric = Metric.find(params.require(:metric_id))
       from_param = params[:from]
-      from_filter = from_param ? DateTime.strptime(from_param, '%s').utc : nil
-      measures = Measures.for_metric(metric, from_filter)
+      from_filter = from_param ? DateTime.parse(from_param).utc : nil
+      measures = MeasuresPresenter.for_metric(metric, from_filter)
 
       response = {
         measures: measures.serialize

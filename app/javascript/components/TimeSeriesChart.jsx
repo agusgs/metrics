@@ -17,8 +17,8 @@ function getRandomHexColor() {
     return "#" + ((1 << 24) * Math.random() | 0).toString(16);
 }
 
-function formatDate(unixTime) {
-    return moment(unixTime * 1000).format('YY/MM/DD HH:mm:ss');
+function formatDate(timestamp) {
+    return moment(timestamp).format('YY/MM/DD HH:mm:ss');
 }
 
 function formatTooltipContent(value, name, _props) {
@@ -43,7 +43,6 @@ const TimeSeriesChart = ({chartData}) => (
                 domain={['auto', 'auto']}
                 name='Time'
                 tickFormatter={formatDate}
-                type='number'
             />
             <YAxis dataKey='measure' name='Measure'/>
             <Tooltip labelFormatter={formatDate} formatter={formatTooltipContent} cursor={{strokeDasharray: '3 3'}}/>
@@ -59,7 +58,7 @@ const TimeSeriesChart = ({chartData}) => (
 TimeSeriesChart.propTypes = {
     chartData: PropTypes.arrayOf(
         PropTypes.shape({
-            timestamp: PropTypes.number.isRequired,
+            timestamp: PropTypes.string.isRequired,
             measure: PropTypes.number.isRequired,
             avgDay: PropTypes.number.isRequired,
             avgHour: PropTypes.number.isRequired,

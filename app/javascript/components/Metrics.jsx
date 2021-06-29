@@ -58,7 +58,7 @@ export function Metrics() {
                             }}>
                                 <td>{index}</td>
                                 <td colSpan="2">{metric.name}</td>
-                                <td>{metric.lastUpdate > 0 ? moment(metric.lastUpdate).calendar() : 'None'}</td>
+                                <td>{metric.lastUpdate ? moment(metric.lastUpdate).calendar() : 'None'}</td>
                             </tr>
                         ))
                     }

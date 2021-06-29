@@ -10,7 +10,7 @@ function apiCall(method, path) {
     return fetch(path, requestOptions).then((response) => {
         if (!response.ok) {
             console.log(response)
-            throw new Error('Network response was not ok');
+            throw new Error("Network response was not ok");
         }
         return response.json()
     })
@@ -25,5 +25,5 @@ export function getMetrics() {
 }
 
 export function getMeasures(metricId, filter) {
-    return get(`/api/measures?metric_id=${metricId}${filter ? `&from=${filter.unix()}` : ''}`)
+    return get(`/api/measures?metric_id=${metricId}${filter ? `&from=${filter.toString()}` : ''}`)
 }
