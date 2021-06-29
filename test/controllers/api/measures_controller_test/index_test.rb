@@ -29,10 +29,7 @@ module Api
           get "/api/measures?metric_id=#{@metric.id}"
 
           assert_response :success
-          empty_response = response.parsed_body
-          assert_equal @metric.id, empty_response['metric']['id']
-          assert_equal @metric.name, empty_response['metric']['name']
-          assert_equal [], empty_response['measures']
+          assert_equal [], response.parsed_body['measures']
         end
       end
 
@@ -64,10 +61,39 @@ module Api
           get "/api/measures?metric_id=#{@metric.id}"
 
           assert_response :success
-          empty_response = response.parsed_body
-          assert_equal @metric.id, empty_response['metric']['id']
-          assert_equal @metric.name, empty_response['metric']['name']
-          assert_equal expected_measures, empty_response['measures']
+          assert_equal expected_measures, response.parsed_body['measures']
+        end
+      end
+
+      class SuccessFilterResponse < IndexTest
+        setup do
+          @metric = Metric.create!(name: 'the name')
+          Timecop.freeze(DateTime.now) do
+            @today_measure = Measure.create!(metric: @metric, value: rand(0.0...999.99999))
+          end
+
+          Timecop.freeze(1.day.ago) do
+            Measure.create!(metric: @metric, value: rand(0.0...999.99999))
+          end
+        end
+
+        def expected_measures
+          [
+            {
+              'timestamp' => @today_measure.created_at.utc.to_i,
+              'measure' => @today_measure.value.to_f,
+              'avgMinute' => @today_measure.value.to_f,
+              'avgHour' => @today_measure.value.to_f,
+              'avgDay' => @today_measure.value.to_f
+            }
+          ]
+        end
+
+        test 'returns success response' do
+          get "/api/measures?metric_id=#{@metric.id}&from=#{10.minutes.ago.to_i}"
+
+          assert_response :success
+          assert_equal expected_measures, response.parsed_body['measures']
         end
       end
     end

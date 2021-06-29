@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {getMetrics} from "../lib/api";
 import {useHistory} from "react-router-dom";
 import moment from "moment";
-import {Card, ProgressBar, Spinner, Table} from "react-bootstrap";
+import {Card, Spinner, Table} from "react-bootstrap";
 import * as PropTypes from "prop-types";
 
 const loading = "LOADING"
@@ -54,7 +54,7 @@ export function Metrics() {
                     {
                         metrics.map((metric, index) => (
                             <tr key={index} onClick={() => {
-                                history.push(`/metric/${metric.id}`)
+                                history.push(`/metric/${metric.id}?name=${metric.name}`)
                             }}>
                                 <td>{index}</td>
                                 <td colSpan="2">{metric.name}</td>

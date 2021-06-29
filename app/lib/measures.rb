@@ -2,11 +2,12 @@
 
 # This class represents the group of measures that exists for a given metric
 class Measures
-  def self.for_metric(metric)
-    new(metric)
+  def self.for_metric(metric, from_filter)
+    new(metric, from_filter)
   end
 
-  def initialize(metric)
+  def initialize(metric, from_filter)
+    @from_filter = from_filter
     @per_day = by_metric(metric).avg_day
     @per_hour = by_metric(metric).avg_hour
     @per_minute = by_metric(metric).avg_minute
@@ -48,6 +49,11 @@ class Measures
   end
 
   def by_metric(metric)
-    Measure.where(metric: metric)
+    by_metric = Measure.where(metric: metric)
+    if @from_filter
+      by_metric.where('created_at > ?', @from_filter)
+    else
+      by_metric
+    end
   end
 end

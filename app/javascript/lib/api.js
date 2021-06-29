@@ -24,6 +24,6 @@ export function getMetrics() {
     return get("/api/metrics")
 }
 
-export function getMeasures(metricId) {
-    return get(`/api/measures?metric_id=${metricId}`)
+export function getMeasures(metricId, filter) {
+    return get(`/api/measures?metric_id=${metricId}${filter ? `&from=${filter.unix()}` : ''}`)
 }

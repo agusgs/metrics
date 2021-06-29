@@ -6,13 +6,11 @@ module Api
   class MeasuresController < ApplicationController
     def index
       metric = Metric.find(params.require(:metric_id))
-      measures = Measures.for_metric(metric)
+      from_param = params[:from]
+      from_filter = from_param ? DateTime.strptime(from_param, '%s').utc : nil
+      measures = Measures.for_metric(metric, from_filter)
 
       response = {
-        metric: {
-          id: metric.id,
-          name: metric.name
-        },
         measures: measures.serialize
       }
 
