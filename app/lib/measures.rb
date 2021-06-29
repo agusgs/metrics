@@ -10,24 +10,31 @@ class Measures
     @per_day = by_metric(metric).avg_day
     @per_hour = by_metric(metric).avg_hour
     @per_minute = by_metric(metric).avg_minute
-    @all = by_metric(metric)
+    @all = by_metric(metric).order(:created_at)
   end
 
-  AVERAGE_PER_DAY_NAME = 'Average per day'
+  def get_average_minute(measure)
+    @per_minute[measure.created_at.at_beginning_of_minute]
+  end
 
-  AVERAGE_PER_HOUR_NAME = 'Average per hour'
+  def get_average_hour(measure)
+    @per_hour[measure.created_at.at_beginning_of_hour]
+  end
 
-  AVERAGE_PER_MINUTE_NAME = 'Average per minute'
-
-  ALL_MEASURES_NAME = 'All measures'
+  def get_average_day(measure)
+    @per_day[measure.created_at.at_beginning_of_day]
+  end
 
   def serialize
-    [
-      { name: AVERAGE_PER_DAY_NAME, measures: map_average(@per_day) },
-      { name: AVERAGE_PER_HOUR_NAME, measures: map_average(@per_hour) },
-      { name: AVERAGE_PER_MINUTE_NAME, measures: map_average(@per_minute) },
-      { name: ALL_MEASURES_NAME, measures: map_all }
-    ]
+    @all.map do |measure|
+      {
+        timestamp: measure.created_at.to_i,
+        measure: measure.value.to_f,
+        avgMinute: get_average_minute(measure).to_f,
+        avgHour: get_average_hour(measure).to_f,
+        avgDay: get_average_day(measure).to_f
+      }
+    end
   end
 
   private

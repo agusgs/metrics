@@ -5,8 +5,8 @@ import {
     CartesianGrid,
     Legend,
     ResponsiveContainer,
-    Scatter,
-    ScatterChart,
+    Line,
+    LineChart,
     Tooltip,
     XAxis,
     YAxis,
@@ -22,16 +22,21 @@ function formatDate(unixTime) {
 }
 
 function formatTooltipContent(value, name, _props) {
-    if (name === 'Time') {
-        return formatDate(value)
-    } else {
-        return value
+    switch (name) {
+        case 'measure':
+            return [value, 'Measure']
+        case 'avgDay':
+            return [value, 'Day average']
+        case 'avgHour':
+            return [value, 'Hour average']
+        case 'avgMinute':
+            return [value, 'Minute average']
     }
 }
 
 const TimeSeriesChart = ({chartData}) => (
     <ResponsiveContainer width='95%' height={500}>
-        <ScatterChart>
+        <LineChart data={chartData}>
             <CartesianGrid/>
             <XAxis
                 dataKey='timestamp'
@@ -41,34 +46,26 @@ const TimeSeriesChart = ({chartData}) => (
                 type='number'
             />
             <YAxis dataKey='measure' name='Measure'/>
-            <Tooltip formatter={formatTooltipContent} cursor={{strokeDasharray: '3 3'}}/>
+            <Tooltip labelFormatter={formatDate} formatter={formatTooltipContent} cursor={{strokeDasharray: '3 3'}}/>
             <Legend/>
-
-            {
-                chartData.map(({name, measures}, index) => (
-                    <Scatter
-                        key={index}
-                        data={measures}
-                        fill={getRandomHexColor()}
-                        name={name}
-                    />
-                ))
-            }
-        </ScatterChart>
+            <Line type="monotone" label='Measure' dataKey="measure" stroke={getRandomHexColor()} activeDot={{r: 8}}/>
+            <Line type="monotone" label='Day average' dataKey="avgDay" stroke={getRandomHexColor()} activeDot={{r: 8}}/>
+            <Line type="monotone" label='Hour average' dataKey="avgHour" stroke={getRandomHexColor()} activeDot={{r: 8}}/>
+            <Line type="monotone" label='Minute average' dataKey="avgMinute" stroke={getRandomHexColor()} activeDot={{r: 8}}/>
+        </LineChart>
     </ResponsiveContainer>
 )
 
 TimeSeriesChart.propTypes = {
     chartData: PropTypes.arrayOf(
         PropTypes.shape({
-            name: PropTypes.string.isRequired,
-            measures: PropTypes.arrayOf(
-                PropTypes.shape({
-                    timestamp: PropTypes.number,
-                    measure: PropTypes.number
-                }))
-        })
-    ).isRequired
+            timestamp: PropTypes.number.isRequired,
+            measure: PropTypes.number.isRequired,
+            avgDay: PropTypes.number.isRequired,
+            avgHour: PropTypes.number.isRequired,
+            avgMinute: PropTypes.number.isRequired,
+        }).isRequired
+    )
 }
 
 export default TimeSeriesChart

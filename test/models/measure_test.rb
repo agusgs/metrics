@@ -46,20 +46,20 @@ class MeasureTest < ActiveSupport::TestCase
     end
 
     averages = averages_block.call
-    dates = averages.keys
+    dates = averages.keys.sort
 
     assert_equal 2, dates.count
-    assert_equal first_date.utc, dates.second
-    assert_equal first_expected_average, averages[dates.second]
-    assert_equal second_date, dates.first
-    assert_equal second_expected_average, averages[dates.first]
+    assert_equal first_date.utc, dates.first
+    assert_equal first_expected_average, averages[dates.first]
+    assert_equal second_date, dates.second
+    assert_equal second_expected_average, averages[dates.second]
   end
 
   test 'average measures per day' do
     assert_correct_averages_for(
       -> { Measure.avg_day },
-      DateTime.now.utc.at_beginning_of_day,
-      1.day.ago.utc.at_beginning_of_day
+      1.day.ago.utc.at_beginning_of_day,
+      DateTime.now.utc.at_beginning_of_day
     )
   end
 
