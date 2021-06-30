@@ -47,10 +47,10 @@ const TimeSeriesChart = ({chartData}) => (
             <YAxis dataKey='measure' name='Measure'/>
             <Tooltip labelFormatter={formatDate} formatter={formatTooltipContent} cursor={{strokeDasharray: '3 3'}}/>
             <Legend/>
-            <Line type="monotone" label='Measure' dataKey="measure" stroke={getRandomHexColor()} activeDot={{r: 8}}/>
-            <Line type="monotone" label='Day average' dataKey="avgDay" stroke={getRandomHexColor()} activeDot={{r: 8}}/>
-            <Line type="monotone" label='Hour average' dataKey="avgHour" stroke={getRandomHexColor()} activeDot={{r: 8}}/>
-            <Line type="monotone" label='Minute average' dataKey="avgMinute" stroke={getRandomHexColor()} activeDot={{r: 8}}/>
+            <Line type="monotone" dataKey="measure" stroke={getRandomHexColor()} activeDot={{r: 8}}/>
+            <Line type="monotone" dataKey="avgDay" stroke={getRandomHexColor()} activeDot={{r: 8}}/>
+            <Line type="monotone" dataKey="avgHour" stroke={getRandomHexColor()} activeDot={{r: 8}}/>
+            <Line type="monotone" dataKey="avgMinute" stroke={getRandomHexColor()} activeDot={{r: 8}}/>
         </LineChart>
     </ResponsiveContainer>
 )

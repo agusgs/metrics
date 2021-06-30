@@ -9,5 +9,10 @@ module Api
       end
       render json: metrics
     end
+
+    def create
+      Metric.create!(name: params.require(:name))
+      render json: :nothing
+    end
   end
 end

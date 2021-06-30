@@ -16,5 +16,13 @@ module Api
 
       render json: response
     end
+
+    def create
+      metric = Metric.find(params.require(:metricId))
+      measure = params.require(:measure).to_d
+
+      Measure.create!(metric: metric, value: measure)
+      render json: :nothing
+    end
   end
 end
