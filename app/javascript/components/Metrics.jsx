@@ -24,7 +24,7 @@ function MetricsFooter({status}) {
 }
 
 export function Metrics() {
-    const [asyncState, setAsyncState] = useState({status: loading, metrics: []})
+    const [asyncState, setAsyncState] = useState({status: loading, metrics: [], page:{}})
     const {status, metrics} = asyncState
     const history = useHistory();
     const closedModal = {metricName: '', metricId: null, open: false};
@@ -38,10 +38,10 @@ export function Metrics() {
     const closePostMeasureModal = () => setPostMeasureModal(closedModal);
 
     useEffect(() => {
-        getMetrics().then((metrics) => {
-            setAsyncState({status: success, metrics: metrics})
+        getMetrics().then((response) => {
+            setAsyncState({status: success, metrics: response.data, page: response.page})
         }).catch((_e) => {
-            setAsyncState({status: error, metrics: []})
+            setAsyncState({status: error, metrics: [], page: {}})
         })
     }, [metricCreated])
 
