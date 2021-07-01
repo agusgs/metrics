@@ -1,16 +1,16 @@
 import React, {useEffect, useState} from "react";
 import {getMetrics} from "../lib/api";
-import {useHistory} from "react-router-dom";
-import moment from "moment";
-import {Button, Card, Spinner, Table} from "react-bootstrap";
+import {Card, Spinner, Table} from "react-bootstrap";
 import {PostMeasureModal} from "./PostMeasureModal";
 import {CreateMetric} from "./CreateMetric";
+import {MetricsPagination} from "./MetricsPagination";
+import {MetricsRow} from "./MetricsRow";
 
 const loading = "LOADING"
 const error = "ERROR"
 const success = "SUCCESS"
 
-function MetricsFooter({status}) {
+function MetricsFooter({status, children}) {
     switch (status) {
         case loading:
             return <Spinner animation="border"/>
@@ -18,32 +18,37 @@ function MetricsFooter({status}) {
             return <Card.Text>
                 There was an error fetching the data from the server, please try again later
             </Card.Text>
+        case success:
+            return children
         default:
             return null
     }
 }
 
 export function Metrics() {
-    const [asyncState, setAsyncState] = useState({status: loading, metrics: [], page:{}})
-    const {status, metrics} = asyncState
-    const history = useHistory();
+    const [status, setStatus] = useState(loading)
+    const [metrics, setMetrics] = useState([])
+    const [pagination, setPagination] = useState({current: 1, total: 1})
     const closedModal = {metricName: '', metricId: null, open: false};
     const [postMeasureModal, setPostMeasureModal] = useState(closedModal);
     const [metricCreated, setMetricCreated] = useState(false);
 
-    const showPostMeasureModal = (event, metricName, metricId) => {
-        event.stopPropagation()
+    const showPostMeasureModal = (metricName, metricId) => {
         setPostMeasureModal({metricName: metricName, metricId: metricId, open: true});
     }
-    const closePostMeasureModal = () => setPostMeasureModal(closedModal);
+
+    const setCurrentPage = (current) => setPagination({...pagination, current: current})
 
     useEffect(() => {
-        getMetrics().then((response) => {
-            setAsyncState({status: success, metrics: response.data, page: response.page})
+        getMetrics(pagination.current).then((response) => {
+            setStatus(success)
+            setMetrics(response.data)
+            setPagination(response.page)
         }).catch((_e) => {
-            setAsyncState({status: error, metrics: [], page: {}})
+            setStatus(error)
+            setMetrics([])
         })
-    }, [metricCreated])
+    }, [metricCreated, pagination.current])
 
     return (
         <>
@@ -62,33 +67,23 @@ export function Metrics() {
                         <tbody>
                         {
                             metrics.map((metric, index) => (
-                                <tr key={index} onClick={() => {
-                                    history.push(`/metric/${metric.id}?name=${metric.name}`)
-                                }}>
-                                    <td>{index}</td>
-                                    <td>{metric.name}</td>
-                                    <td>{metric.lastUpdate ? moment(metric.lastUpdate).calendar() : 'None'}</td>
-                                    <td>
-                                        <Button className="translate-middle" variant="primary"
-                                                onClick={(e) => {
-                                                    showPostMeasureModal(e, metric.name, metric.id)
-                                                }}>
-                                            New measure
-                                        </Button>
-                                    </td>
-                                </tr>
+                                <MetricsRow key={index} index={index} metric={metric}
+                                            onClick={() => showPostMeasureModal(metric.name, metric.id)}/>
                             ))
                         }
                         </tbody>
                     </Table>
                 </Card.Body>
                 <Card.Footer className="text-center">
-                    <CreateMetric onClick={() => setMetricCreated(false)} afterCreation={() => setMetricCreated(true)}/>
-                    <MetricsFooter status={status}/>
+                    <MetricsFooter status={status}>
+                        <MetricsPagination {...pagination} onChange={setCurrentPage}/>
+                        <CreateMetric onClick={() => setMetricCreated(false)}
+                                      afterCreation={() => setMetricCreated(true)}/>
+                    </MetricsFooter>
                 </Card.Footer>
             </Card>
             <PostMeasureModal show={postMeasureModal.open} metricName={postMeasureModal.metricName}
-                              metricId={postMeasureModal.metricId} close={closePostMeasureModal}/>
+                              metricId={postMeasureModal.metricId} close={() => setPostMeasureModal(closedModal)}/>
 
         </>
     )

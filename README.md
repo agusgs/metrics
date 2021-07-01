@@ -54,8 +54,7 @@ And now you can visit the site with the URL http://localhost:3000
 
 ##### 6. Run tests
 
-We have tests both on backend and frontend.
-To run the backend tests:
+To run the tests:
 ```bash
 bundle exec rails test
 ```

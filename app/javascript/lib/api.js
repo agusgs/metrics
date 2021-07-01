@@ -32,8 +32,8 @@ function get(path) {
     return apiCall("GET", path);
 }
 
-export function getMetrics() {
-    return get("/api/metrics")
+export function getMetrics(page) {
+    return get(`/api/metrics?page=${page || ''}`)
 }
 
 export function createMetric(metricName) {
